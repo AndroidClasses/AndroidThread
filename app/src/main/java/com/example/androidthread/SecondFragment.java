@@ -18,6 +18,7 @@ public class SecondFragment extends Fragment implements MultiLogger.Callback {
     private FragmentSecondBinding binding;
 
     private final StringBuilder stringBuilder = new StringBuilder();
+    private final int ACTIVE_THREAD_NUM = 26;
 
     @Override
     public View onCreateView(
@@ -25,7 +26,7 @@ public class SecondFragment extends Fragment implements MultiLogger.Callback {
             Bundle savedInstanceState
     ) {
         binding = FragmentSecondBinding.inflate(inflater, container, false);
-        new MultiLogger(3, this).run();
+        new MultiLogger(ACTIVE_THREAD_NUM, this).start();
         return binding.getRoot();
     }
 
@@ -49,16 +50,11 @@ public class SecondFragment extends Fragment implements MultiLogger.Callback {
 
     @Override
     public void trigger(String name, String value) {
-        stringBuilder.append(name).append(":").append(value).append("\n");
+        stringBuilder.append(name).append(":").append(value);
         applyTextViewLabel(binding.textviewSecond, stringBuilder.toString());
     }
 
     private synchronized void applyTextViewLabel(TextView textView, String label) {
-        textView.post(new Runnable() {
-            @Override
-            public void run() {
-                textView.setText(label);
-            }
-        });
+        textView.post(() -> textView.setText(label));
     }
 }
